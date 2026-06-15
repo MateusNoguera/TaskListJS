@@ -5,33 +5,39 @@ let listElement = document.querySelector("#app ul");
 let taskList = JSON.parse(localStorage.getItem("localTaskList")) || [];
 
 function addTask() {
-    if(inputElement === '') {
+    if(inputElement.value.trim() === '') {
         alert('Nothing was typed!');
         return false;
     } else {
-        taskList.push(inputElement.value);
+        taskList.push(inputElement.value.trim());
         inputElement.value = '';
         renderTask();
         localSaveData();
+        inputElement.focus();
     }
 }
 
 buttonElement.onclick = addTask;
 
+inputElement.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addTask();
+});
+
 function renderTask() {
     listElement.innerHTML = "";
 
-    taskList.map((taskValue) => {
+    taskList.map((taskValue, index) => {
         let liElement = document.createElement("li");
         let taskText = document.createTextNode(taskValue);
 
         let linkElement = document.createElement("a");
-        linkElement.setAttribute("href", "#");
         let linkText = document.createTextNode("Delete");
         linkElement.appendChild(linkText);
 
-        let position = taskList.indexOf(taskValue);
-        linkElement.setAttribute("onclick", `deleteTask(${position})`);
+        linkElement.addEventListener("click", (e) => {
+            e.preventDefault();
+            deleteTask(index);
+        });
 
         liElement.appendChild(taskText);
         liElement.appendChild(linkElement);
